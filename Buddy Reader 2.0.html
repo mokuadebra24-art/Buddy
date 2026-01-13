@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bible Buddy — Luxe Reader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Merriweather:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        /*
+         * =================================================================
+         * CSS STYLES
+         * =================================================================
+         */
+        :root {
+            --bg-1: #fffafc;
+            --bg-2: #fff6fb;
+            --accent: #e8a1b9; /* Silky pink */
+            --accent-2: #f6c6d9;
+            --muted: #6b6b6b;
+            --panel: #ffffff;
+            --paper: #fffefc;
+            --radius: 16px;
+            --shadow: 0 24px 60px rgba(17, 12, 24, 0.08);
+            --ui-font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            --script-font: "Merriweather", serif;
+            --verse-font-size: 18px;
+            --verse-line: 1.95;
+            --gold: #d4a373;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: var(--ui-font);
+            background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-2) 100%);
+            color: #111;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        /* Top Bar */
+        header#topbar {
+            position: sticky;
+            top: 0;
+            z-index: 60;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.95);
+            border-bottom: 1px solid rgba(10, 10, 10, 0.04);
+            backdrop-filter: blur(6px);
+        }
+
+        /* Branding */
+        .brand {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--accent);
+            letter-spacing: 0.2px;
+            font-family: var(--ui-font);
+        }
+
+        /* Select area */
+        .select-wrap {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-right: 6px;
+        }
+
+        select.btn, button.btn {
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(15, 15, 20, 0.06);
+            background: linear-gradient(180deg, #fff, #fffefc);
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 6px 18px rgba(15, 15, 20, 0.02);
+            transition: all .12s ease;
+            font-family: var(--ui-font);
+            -webkit-appearance: none; /* For select cleanup */
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        select.btn:focus, button.btn:focus {
+            outline: none;
+            box-shadow: 0 6px 18px rgba(232, 161, 185, 0.08);
+            border-color: rgba(232, 161, 185, 0.15);
+        }
+
+        .spacer {
+            flex: 1;
+        }
+
+        /* tiny verse toggle */
+        .verse-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .switch {
+            --w: 36px;
+            --h: 20px;
+            --bg: #eee;
+            --accent: var(--accent);
+            position: relative;
+            width: var(--w);
+            height: var(--h);
+            border-radius: 999px;
+            background: var(--bg);
+            cursor: pointer;
+            transition: all .18s ease;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .switch .knob {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: calc(var(--h) - 4px);
+            height: calc(var(--h) - 4px);
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(16, 12, 24, 0.08);
+            transition: all .18s ease;
+        }
+
+        .switch.on {
+            background: linear-gradient(90deg, rgba(232, 161, 185, 0.18), rgba(246, 198, 217, 0.12));
+            border-color: rgba(232, 161, 185, 0.15);
+        }
+
+        .switch.on .knob {
+            transform: translateX(calc(var(--w) - var(--h)));
+        }
+
+        /* Format bar (keeps minimal, clean) */
+        #formatBar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 10px 18px;
+            border-bottom: 1px solid rgba(10, 10, 10, 0.03);
+            background: transparent;
+            position: sticky;
+            top: 64px;
+            z-index: 45;
+        }
+
+        .btn.icon {
+            width: 44px;
+            height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: linear-gradient(180deg, #fff, #fffefc);
+            border: 1px solid rgba(15, 15, 20, 0.06);
+            box-shadow: 0 8px 22px rgba(17, 12, 24, 0.03);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .12s ease;
+        }
+
+        .btn.icon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 26px rgba(17, 12, 24, 0.05);
+        }
+
+        .btn.icon.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn.icon:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.icon:disabled:hover {
+            transform: none;
+            box-shadow: 0 8px 22px rgba(17, 12, 24, 0.03);
+        }
+
+        /* Book frame */
+        main#main {
+            flex: 1;
+            display: flex;
+            gap: 22px;
+            padding: 22px;
+            align-items: flex-start;
+            justify-content: center;
+        }
+
+        #viewerWrap {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .book-frame {
+            width: 88%;
+            max-width: 1200px;
+            min-width: 360px;
+            border-radius: 18px;
+            padding: 26px;
+            background: linear-gradient(180deg, #fffdfb, #fff7fb);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: visible;
+            border: 1px solid rgba(200, 120, 150, 0.03);
+        }
+
+        /* page layout */
+        .page-wrap {
+            transition: all .28s ease;
+        }
+
+        .page {
+            background: var(--panel);
+            border-radius: 14px;
+            padding: 28px;
+            min-height: 520px;
+            box-shadow: 0 12px 30px rgba(14, 10, 18, 0.04);
+            overflow-wrap: break-word;
+            transition: all .25s ease;
+            user-select: text;
+        }
+
+        .two-page .page {
+            min-height: 480px;
+        }
+
+        .two-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 28px;
+        }
+
+        /* verse & word styling (scripture uses seriffed font) */
+        .verse {
+            display: block;
+            margin: 8px 0;
+            line-height: var(--verse-line);
+            opacity: 1;
+            font-family: var(--script-font);
+            font-size: var(--verse-font-size);
+            color: #191919;
+        }
+
+        .word {
+            cursor: text;
+            white-space: pre-wrap;
+            transition: all 0.12s ease;
+            display: inline;
+        }
+
+        sup.verse-num {
+            opacity: 0.72;
+            margin-right: 8px;
+            font-size: 13px;
+            color: #7b6f6f;
+            font-family: var(--ui-font);
+        }
+
+        /* Formatting styles */
+        .bold {
+            font-weight: bold !important;
+        }
+
+        .italic {
+            font-style: italic !important;
+        }
+
+        .underline {
+            text-decoration: underline !important;
+        }
+
+        /* Oval bubble highlight */
+        .bubble {
+            background: rgba(232, 161, 185, 0.12) !important;
+            border-radius: 50px;
+            padding: 2px 8px;
+            margin: 0 1px;
+            display: inline;
+            border: 1px solid rgba(232, 161, 185, 0.22);
+            transform: scale(1.02);
+            transition: all 0.15s ease;
+        }
+
+        .bubble-mode .word {
+            cursor: pointer;
+        }
+
+        .bubble-mode .word:hover {
+            background: rgba(232, 161, 185, 0.08);
+            border-radius: 4px;
+        }
+
+        /* Selection highlight */
+        .selection-highlight {
+            background-color: rgba(232, 161, 185, 0.2);
+            border-radius: 4px;
+        }
+
+        /* RSVP container (overlay) */
+        .rsvp-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--ui-font);
+            background: rgba(255, 255, 255, 0.98);
+            padding: 40px;
+        }
+
+        /* Oval bubble */
+        .rsvp-bubble {
+            background: rgba(255, 255, 255, 1);
+            border-radius: 80px;
+            padding: 34px 72px;
+            min-width: 360px;
+            max-width: 82%;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(17, 12, 24, 0.09), inset 0 4px 20px rgba(255, 255, 255, 0.8);
+            position: relative;
+            transition: all .28s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* RSVP word: large serif, but blended with UI */
+        .rsvp-word {
+            font-size: 56px;
+            font-weight: 800;
+            margin: 0;
+            text-align: center;
+            font-family: var(--script-font);
+            color: #333;
+            letter-spacing: -1px;
+            display: inline-block;
+            transform-origin: center;
+            line-height: 1.2;
+        }
+
+        /* ORP highlighting */
+        .rsvp-prefix {
+            color: #666;
+        }
+
+        .rsvp-pivot {
+            color: var(--accent);
+            text-decoration: underline;
+            text-decoration-color: var(--accent);
+            text-decoration-thickness: 3px;
+            text-underline-offset: 4px;
+        }
+
+        .rsvp-suffix {
+            color: #666;
+        }
+
+        /* Oval progress bar with glow */
+        .rsvp-progress-container {
+            margin-top: 18px;
+            width: 70%;
+            max-width: 540px;
+            height: 14px;
+            border-radius: 999px;
+            background: rgba(232, 161, 185, 0.2);
+            overflow: hidden;
+            box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+        }
+
+        .rsvp-progress-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--accent), #f4c8d8);
+            transition: width .28s ease;
+            box-shadow: 0 0 12px rgba(232, 161, 185, 0.6);
+        }
+
+        /* controls */
+        .rsvp-controls {
+            margin-top: 22px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .rsvp-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 18px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(232, 161, 185, 0.3);
+            transition: transform .12s ease;
+        }
+
+        .rsvp-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .rsvp-speed-value {
+            min-width: 48px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--accent);
+        }
+
+        /* Repeat control */
+        .rsvp-repeat-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(232, 161, 185, 0.1);
+        }
+
+        .rsvp-repeat-value {
+            min-width: 36px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--accent);
+        }
+
+        /* subtle pop-in animation (opacity + scale) */
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.96);
+            }
+            60% {
+                opacity: 1;
+                transform: scale(1.02);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* notes panel */
+        .notes-panel {
+            position: fixed;
+            right: -420px;
+            top: 0;
+            width: 380px;
+            height: 100vh;
+            background: var(--panel);
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.08);
+            transition: right 0.28s ease;
+            z-index: 100;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .notes-panel.open {
+            right: 0;
+        }
+
+        .note-item {
+            background: var(--paper);
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent);
+            position: relative;
+        }
+
+        .note-item button.delete-note {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--muted);
+        }
+        
+        /* reading progress with glow */
+        .reading-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            z-index: 1000;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 8px rgba(232, 161, 185, 0.6);
+        }
+
+        /* Dark Mode */
+        body.dark {
+            --bg-1: #1a1a2e;
+            --bg-2: #16213e;
+            --panel: #0f3460;
+            --paper: #1a1a2e;
+            --accent: #e8a1b9;
+            --muted: #8b9bb4;
+            color: #e2e8f0;
+        }
+
+        body.dark .book-frame {
+            background: linear-gradient(180deg, #0f1730, #0b1326);
+        }
+
+        body.dark .page {
+            background: var(--panel);
+            color: #e2e8f0;
+        }
+
+        body.dark .verse {
+            color: #e2e8f0;
+        }
+
+        body.dark .rsvp-container {
+            background: rgba(26, 26, 46, 0.98);
+        }
+
+        body.dark .rsvp-bubble {
+            background: rgba(15, 52, 96, 1);
+            color: #e2e8f0;
+        }
+
+        body.dark .rsvp-word {
+            color: #e2e8f0;
+        }
+
+        body.dark .rsvp-prefix,
+        body.dark .rsvp-suffix {
+            color: #a0aec0;
+        }
+
+        body.dark .note-item {
+            background: rgba(15, 52, 96, 0.7);
+            color: #e2e8f0;
+        }
+        
+        body.dark select.btn, body.dark button.btn {
+            background: #1f3f6d;
+            border-color: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark select.btn option {
+            background-color: #0f3460;
+            color: #e2e8f0;
+        }
+
+        /* Sepia Mode */
+        body.sepia {
+            --bg-1: #f7efe1;
+            --bg-2: #f0e6d3;
+            --panel: #fffaf0;
+            --paper: #f7efe1;
+            --accent: #e8a1b9;
+            --muted: #8b7355;
+            color: #5c4b37;
+        }
+
+        body.sepia .book-frame {
+            background: linear-gradient(180deg, #f7efe1, #f0e6d3);
+        }
+
+        body.sepia .page {
+            background: var(--panel);
+            color: #5c4b37;
+        }
+
+        body.sepia .verse {
+            color: #5c4b37;
+        }
+
+        body.sepia .rsvp-container {
+            background: rgba(247, 239, 225, 0.98);
+        }
+
+        body.sepia .rsvp-bubble {
+            background: rgba(255, 250, 240, 1);
+            color: #5c4b37;
+        }
+
+        body.sepia .rsvp-word {
+            color: #5c4b37;
+        }
+
+        body.sepia .rsvp-prefix,
+        body.sepia .rsvp-suffix {
+            color: #8b7355;
+        }
+
+        body.sepia .note-item {
+            background: rgba(255, 250, 240, 0.8);
+            color: #5c4b37;
+        }
+
+        /* Hide verse numbers when class is present */
+        body.hide-verse-nums sup.verse-num {
+            display: none !important;
+        }
+
+        /* Audio player */
+        .audio-player {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--panel);
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            display: none;
+            align-items: center;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        /* Small responsive tweaks */
+        @media (max-width: 900px) {
+            .rsvp-bubble {
+                min-width: 260px;
+                padding: 26px 36px;
+            }
+            .rsvp-word {
+                font-size: 42px;
+            }
+            .book-frame {
+                width: 96%;
+                padding: 18px;
+            }
+            .page {
+                padding: 18px;
+            }
+            header#topbar {
+                padding: 10px;
+            }
+            .rsvp-controls {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .two-cols {
+                grid-template-columns: 1fr; /* Single column on small screens */
+            }
+            .page-wrap {
+                gap: 0;
+            }
+            .notes-panel {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="reading-progress" id="readingProgress" style="width:0%;"></div>
+
+<header id="topbar" aria-hidden="false">
+    <div class="brand">Bible Buddy</div>
+
+    <div class="select-wrap" style="align-items:center;">
+        <label for="bookSelect">Book</label>
+        <select id="bookSelect" class="btn" aria-label="Book select"></select>
+
+        <label for="chapterSelect">Chapter</label>
+        <select id="chapterSelect" class="btn" aria-label="Chapter select"></select>
+
+        <button id="prevChapter" class="btn icon" title="Previous chapter">←</button>
+        <button id="loadBtn" class="btn" title="Load chapter">Load</button>
+        <button id="nextChapter" class="btn icon" title="Next chapter">→</button>
+    </div>
+
+    <div class="spacer"></div>
+
+    <div style="display:flex;align-items:center;gap:12px;">
+        <div style="display:flex;gap:8px;align-items:center">
+            <label for="themeSelect" style="font-size:13px;color:var(--muted);">Theme</label>
+            <select id="themeSelect" class="btn">
+                <option value="light">Light</option>
+                <option value="sepia">Sepia</option>
+                <option value="dark">Dark</option>
+            </select>
+        </div>
+    </div>
+</header>
+
+<div id="formatBar">
+    <button id="undoBtn" class="btn icon" title="Undo (Ctrl+Z)" disabled>↶</button>
+    <button id="redoBtn" class="btn icon" title="Redo (Ctrl+Y)" disabled>↷</button>
+    <button id="boldBtn" class="btn icon" title="Bold (Ctrl+B)"><strong>B</strong></button>
+    <button id="italicBtn" class="btn icon" title="Italic (Ctrl+I)"><em>I</em></button>
+    <button id="underlineBtn" class="btn icon" title="Underline (Ctrl+U)">U</button>
+    <button id="bubbleBtn" class="btn icon" title="Bubble Mode">🫧</button>
+
+    <div style="display:flex;gap:8px;align-items:center;margin-left:6px;">
+        <select id="fontSelect" class="btn">
+            <option value="Inter, system-ui, Arial, sans-serif">Sans</option>
+            <option value="Merriweather, serif">Serif</option>
+            <option value="Georgia, serif">Georgia</option>
+            <option value="'Times New Roman', serif">Times</option>
+            <option value="'Courier New', monospace">Mono</option>
+        </select>
+        
+        <button id="rsvpBtn" class="btn icon" title="RSVP Mode (Ctrl+R)">🚀</button>
+        <button id="notesBtn" class="btn icon" title="Notes (Ctrl+N)">📝</button>
+        <button id="bookmarkBtn" class="btn icon" title="Bookmark">🔖</button>
+        <button id="audioBtn" class="btn icon" title="Audio (Ctrl+A)">🔊</button>
+        <button id="savePDF" class="btn icon" title="Save PDF (Ctrl+S)">💾</button>
+    </div>
+    
+    <div class="spacer"></div>
+    
+    <div class="verse-toggle" title="Show or hide verse numbers">
+        <label style="font-size:13px;color:var(--muted);">Verse #</label>
+        <div id="verseSwitch" class="switch on" role="switch" aria-checked="true">
+            <div class="knob"></div>
+        </div>
+    </div>
+</div>
+
+<main id="main">
+    <div id="viewerWrap">
+        <div class="book-frame" id="bookFrame" role="main" aria-live="polite">
+            <div id="pagesContainer" class="two-page">
+                <div class="page-wrap two-cols" id="pageWrap">
+                    <div class="page" id="leftPage" aria-label="Left page" spellcheck="false">
+                        <p style="text-align:center;color:var(--muted);">Select a Book and Chapter and click 'Load' to begin reading.</p>
+                    </div>
+                    <div class="page" id="rightPage" aria-label="Right page" spellcheck="false">
+                        <p style="text-align:center;color:var(--muted);">The chapter will be split into two pages on larger screens.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div class="rsvp-container" id="rsvpContainer" aria-hidden="true">
+    <div class="rsvp-bubble" id="rsvpBubble" style="animation:popIn .26s ease both;">
+        <div class="rsvp-word" id="rsvpWord">Ready</div>
+    </div>
+
+    <div style="width:100%;display:flex;align-items:center;justify-content:center;margin-top:16px;">
+        <div class="rsvp-progress-container">
+            <div class="rsvp-progress-bar" id="rsvpProgressBar"></div>
+        </div>
+    </div>
+
+    <div class="rsvp-controls" role="group" aria-label="RSVP controls">
+        <button class="rsvp-btn" id="rsvpPlayPause">Start Reading</button>
+        <div style="display:flex;align-items:center;gap:8px;">
+            <button class="rsvp-btn" id="rsvpSlower">Slower</button>
+            <div class="rsvp-speed-value" id="rsvpSpeed">300</div>
+            <button class="rsvp-btn" id="rsvpFaster">Faster</button>
+        </div>
+        <div class="rsvp-repeat-control">
+            <span style="font-size:13px;color:var(--muted);">Repeats:</span>
+            <input type="range" id="rsvpRepeatRange" min="1" max="100" value="1" style="margin:0 10px;">
+            <span class="rsvp-repeat-value" id="rsvpRepeatValue">1</span>
+        </div>
+        <button class="rsvp-btn" id="rsvpRestart">Restart</button>
+        <button class="rsvp-btn" id="rsvpClose">Exit</button>
+    </div>
+</div>
+
+<div class="notes-panel" id="notesPanel" aria-hidden="true">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="margin:0;font-family:var(--ui-font);">My Notes</h3>
+        <button class="btn" id="closeNotes">Close</button>
+    </div>
+    <div id="notesList"></div>
+    <div style="margin-top:20px;">
+        <textarea id="newNote" placeholder="Add a note about this verse..." style="width:100%; height:100px; padding:12px; border-radius:8px; border:1px solid #eee; resize:vertical;"></textarea>
+        <button class="btn" id="saveNote" style="margin-top:10px; width:100%;">Save Note</button>
+    </div>
+</div>
+
+<div class="audio-player" id="audioPlayer" style="display:none;">
+    <button class="btn" id="audioPlayPause">Play</button>
+    <span id="audioStatus">Audio ready</span>
+    <button class="btn" id="audioClose">Close</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+    /*
+     * =================================================================
+     * JAVASCRIPT LOGIC
+     * =================================================================
+     */
+
+    /* ===========================
+     * Data
+     * =========================== */
+    const books = [
+        {name:'Genesis', chapters:50},{name:'Exodus', chapters:40},{name:'Leviticus', chapters:27},{name:'Numbers', chapters:36},{name:'Deuteronomy', chapters:34},
+        {name:'Joshua', chapters:24},{name:'Judges', chapters:21},{name:'Ruth', chapters:4},{name:'1 Samuel', chapters:31},{name:'2 Samuel', chapters:24},
+        {name:'1 Kings', chapters:22},{name:'2 Kings', chapters:25},{name:'1 Chronicles', chapters:29},{name:'2 Chronicles', chapters:36},{name:'Ezra', chapters:10},
+        {name:'Nehemiah', chapters:13},{name:'Esther', chapters:10},{name:'Job', chapters:42},{name:'Psalms', chapters:150},{name:'Proverbs', chapters:31},
+        {name:'Ecclesiastes', chapters:12},{name:'Song of Solomon', chapters:8},{name:'Isaiah', chapters:66},{name:'Jeremiah', chapters:52},{name:'Lamentations', chapters:5},
+        {name:'Ezekiel', chapters:48},{name:'Daniel', chapters:12},{name:'Hosea', chapters:14},{name:'Joel', chapters:3},{name:'Amos', chapters:9},
+        {name:'Obadiah', chapters:1},{name:'Jonah', chapters:4},{name:'Micah', chapters:7},{name:'Nahum', chapters:3},{name:'Habakkuk', chapters:3},
+        {name:'Zephaniah', chapters:3},{name:'Haggai', chapters:2},{name:'Zechariah', chapters:14},{name:'Malachi', chapters:4},
+        {name:'Matthew', chapters:28},{name:'Mark', chapters:16},{name:'Luke', chapters:24},{name:'John', chapters:21},{name:'Acts', chapters:28},
+        {name:'Romans', chapters:16},{name:'1 Corinthians', chapters:16},{name:'2 Corinthians', chapters:13},{name:'Galatians', chapters:6},{name:'Ephesians', chapters:6},
+        {name:'Philippians', chapters:4},{name:'Colossians', chapters:4},{name:'1 Thessalonians', chapters:5},{name:'2 Thessalonians', chapters:3},{name:'1 Timothy', chapters:6},
+        {name:'2 Timothy', chapters:4},{name:'Titus', chapters:3},{name:'Philemon', chapters:1},{name:'Hebrews', chapters:13},{name:'James', chapters:5},
+        {name:'1 Peter', chapters:5},{name:'2 Peter', chapters:3},{name:'1 John', chapters:5},{name:'2 John', chapters:1},{name:'3 John', chapters:1},
+        {name:'Jude', chapters:1},{name:'Revelation', chapters:22}
+    ];
+
+    /* ===========================
+     * Element refs
+     * =========================== */
+    const bookSelect = document.getElementById('bookSelect');
+    const chapterSelect = document.getElementById('chapterSelect');
+    const loadBtn = document.getElementById('loadBtn');
+    const prevChapterBtn = document.getElementById('prevChapter');
+    const nextChapterBtn = document.getElementById('nextChapter');
+    const leftPage = document.getElementById('leftPage');
+    const rightPage = document.getElementById('rightPage');
+    const pagesContainer = document.getElementById('pagesContainer');
+    const themeSelect = document.getElementById('themeSelect');
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+    const boldBtn = document.getElementById('boldBtn');
+    const italicBtn = document.getElementById('italicBtn');
+    const underlineBtn = document.getElementById('underlineBtn');
+    const bubbleBtn = document.getElementById('bubbleBtn');
+    const fontSelect = document.getElementById('fontSelect');
+    const verseSwitch = document.getElementById('verseSwitch');
+    const readingProgress = document.getElementById('readingProgress');
+    const rsvpBtn = document.getElementById('rsvpBtn');
+    const notesBtn = document.getElementById('notesBtn');
+    const notesPanel = document.getElementById('notesPanel');
+    const closeNotesBtn = document.getElementById('closeNotes');
+    const newNoteTextarea = document.getElementById('newNote');
+    const saveNoteBtn = document.getElementById('saveNote');
+    const notesList = document.getElementById('notesList');
+    const bookmarkBtn = document.getElementById('bookmarkBtn');
+    const audioBtn = document.getElementById('audioBtn');
+    const audioPlayer = document.getElementById('audioPlayer');
+    const audioPlayPauseBtn = document.getElementById('audioPlayPause');
+    const audioCloseBtn = document.getElementById('audioClose');
+    const savePDFBtn = document.getElementById('savePDF');
+
+    // RSVP elements
+    const rsvpContainer = document.getElementById('rsvpContainer');
+    const rsvpWordEl = document.getElementById('rsvpWord');
+    const rsvpProgressBar = document.getElementById('rsvpProgressBar');
+    const rsvpPlayPauseBtn = document.getElementById('rsvpPlayPause');
+    const rsvpSlowerBtn = document.getElementById('rsvpSlower');
+    const rsvpFasterBtn = document.getElementById('rsvpFaster');
+    const rsvpSpeedDisplay = document.getElementById('rsvpSpeed');
+    const rsvpRepeatRange = document.getElementById('rsvpRepeatRange');
+    const rsvpRepeatValue = document.getElementById('rsvpRepeatValue');
+    const rsvpRestartBtn = document.getElementById('rsvpRestart');
+    const rsvpCloseBtn = document.getElementById('rsvpClose');
+
+    /* ===========================
+     * State
+     * =========================== */
+    let isBubbleMode = false;
+    let currentHighlightColor = 'bubble';
+    
+    // Undo/Redo state
+    let undoStack = [];
+    let redoStack = [];
+
+    let currentBook = '';
+    let currentChapter = 1;
+
+    // RSVP state
+    let rsvpWords = [];
+    let rsvpInterval = null;
+    let rsvpSpeed = 300; // Words Per Minute (WPM)
+    let rsvpCurrentIndex = 0;
+    let rsvpIsPlaying = false;
+    let rsvpRepeatCount = 0;
+    let rsvpMaxRepeats = 1;
+
+    /* Notes & Bookmarks in localStorage */
+    let notes = JSON.parse(localStorage.getItem('bibleNotes') || '[]');
+    let bookmarks = JSON.parse(localStorage.getItem('bibleBookmarks') || '[]');
+    let currentSelectedVerse = null;
+    let chapterText = ''; // To store the raw text for RSVP
+
+    /* ===========================
+     * Utility Functions
+     * =========================== */
+
+    /**
+     * Finds the current book object based on its name.
+     * @param {string} bookName - The name of the book.
+     * @returns {object|undefined} The book object.
+     */
+    function getBook(bookName) {
+        return books.find(x => x.name === bookName);
+    }
+    
+    /**
+     * Gets the full verse reference string.
+     * @param {number} verseNum - The verse number.
+     * @returns {string} The formatted reference.
+     */
+    function getVerseReference(verseNum) {
+        return `${currentBook} ${currentChapter}:${verseNum}`;
+    }
+
+    /* ===========================
+     * Undo/Redo System
+     * =========================== */
+
+    /**
+     * Saves the current state of the pages to the undo stack.
+     * @param {string} actionType - 'bold', 'highlight', etc.
+     */
+    function saveState(actionType) {
+        const state = {
+            type: actionType,
+            leftHTML: leftPage.innerHTML,
+            rightHTML: rightPage.innerHTML,
+            currentChapter: `${currentBook} ${currentChapter}`,
+            timestamp: Date.now()
+        };
+        
+        // Only save if content has changed or it's the first save for a new chapter
+        if (undoStack.length === 0 || undoStack[undoStack.length - 1].leftHTML !== state.leftHTML || undoStack[undoStack.length - 1].rightHTML !== state.rightHTML || undoStack[undoStack.length - 1].currentChapter !== state.currentChapter) {
+            undoStack.push(state);
+            if (undoStack.length > 50) { // Limit stack size
+                undoStack.shift();
+            }
+            redoStack = []; // Clear redo stack when new action is performed
+            updateUndoRedoButtons();
+        }
+    }
+
+    /**
+     * Applies a state from a stack (undo or redo).
+     * @param {Array} fromStack - The stack to pop the state from.
+     * @param {Array} toStack - The stack to push the current state to.
+     */
+    function applyState(fromStack, toStack) {
+        if (fromStack.length === 0) return;
+        
+        // Save current state to the 'to' stack before loading new state
+        const currentState = {
+            type: 'state-change',
+            leftHTML: leftPage.innerHTML,
+            rightHTML: rightPage.innerHTML,
+            currentChapter: `${currentBook} ${currentChapter}`,
+            timestamp: Date.now()
+        };
+        toStack.push(currentState);
+        
+        const stateToLoad = fromStack.pop();
+        
+        // Apply the loaded state
+        leftPage.innerHTML = stateToLoad.leftHTML;
+        rightPage.innerHTML = stateToLoad.rightHTML;
+        
+        // Re-split if necessary, though saved state should handle it
+        if (stateToLoad.currentChapter !== `${currentBook} ${currentChapter}`) {
+             // This is a complex scenario, but for a simple regen, we assume undo/redo only works on the current chapter content.
+             // A true implementation would also need to change the select boxes. We'll skip that for simplicity here and focus only on HTML content.
+        }
+
+        updateUndoRedoButtons();
+    }
+
+    function undo() {
+        applyState(undoStack, redoStack);
+    }
+
+    function redo() {
+        applyState(redoStack, undoStack);
+    }
+
+    function updateUndoRedoButtons() {
+        undoBtn.disabled = undoStack.length <= 1; // Always keep the initial chapter load state
+        redoBtn.disabled = redoStack.length === 0;
+    }
+
+    /* ===========================
+     * Populate selects
+     * =========================== */
+    function populateBooks(){
+        bookSelect.innerHTML = '';
+        books.forEach(b => {
+            const opt = document.createElement('option');
+            opt.value = b.name;
+            opt.textContent = b.name;
+            bookSelect.appendChild(opt);
+        });
+    }
+
+    function populateChapters(bookName){
+        chapterSelect.innerHTML = '';
+        const b = getBook(bookName);
+        if (!b) return;
+
+        for(let i=1;i<=b.chapters;i++){
+            const o=document.createElement('option');
+            o.value=i; o.textContent=i;
+            chapterSelect.appendChild(o);
+        }
+    }
+
+    populateBooks();
+    // Set initial book/chapter based on the first entries
+    currentBook = bookSelect.value || books[0].name;
+    populateChapters(currentBook);
+    currentChapter = parseInt(chapterSelect.value || '1', 10);
+
+    /* ===========================
+     * Fetch KJV via bible-api.com
+     * =========================== */
+    async function fetchChapter(book, chapter){
+        try{
+            const formattedBook = encodeURIComponent(book);
+            // Use the KJV endpoint from the original code
+            const url = `https://bible-api.com/${formattedBook}%20${chapter}?translation=kjv`;
+            const res = await fetch(url);
+            if(!res.ok) throw new Error('API error: ' + res.status);
+            const data = await res.json();
+            const verses = [];
+            chapterText = ''; // Clear for new chapter
+            
+            if(data.verses){
+                data.verses.forEach(v => {
+                    // Clean text (remove verse numbers at the start)
+                    const cleanText = v.text.replace(/^\d+\s+/, '').trim();
+                    verses.push({
+                        num: v.verse,
+                        text: cleanText
+                    });
+                    chapterText += cleanText + ' ';
+                });
+            } else {
+                verses.push({num:1, text: `No verses found for ${book} ${chapter}.`});
+            }
+            return verses;
+        } catch(e){
+            console.error('Fetch error:', e);
+            chapterText = `Failed to fetch ${book} ${chapter}. Check your network.`;
+            return [{num:1, text: chapterText}];
+        }
+    }
+
+    /* ===========================
+     * Render chapter (keeps two pages)
+     * =========================== */
+
+    /**
+     * Creates a DOM element for a single verse.
+     * @param {object} verse - {num, text}
+     * @returns {HTMLElement} The verse element.
+     */
+    function createVerseElement(verse){
+        const verseEl = document.createElement('span');
+        verseEl.className = 'verse';
+        verseEl.setAttribute('data-verse', verse.num);
+        verseEl.setAttribute('data-ref', getVerseReference(verse.num));
+
+        const numSup = document.createElement('sup');
+        numSup.className = 'verse-num';
+        numSup.textContent = verse.num;
+        verseEl.appendChild(numSup);
+
+        // Split text into words for individual styling/RSVP/highlighting
+        const words = verse.text.split(/(\s+)/).filter(w => w.length > 0);
+        words.forEach((word, index) => {
+            if (word.trim() === '') {
+                verseEl.appendChild(document.createTextNode(word)); // Keep spaces as text nodes
+            } else {
+                const wordSpan = document.createElement('span');
+                wordSpan.className = 'word';
+                wordSpan.textContent = word;
+                wordSpan.setAttribute('data-word-index', index);
+                wordSpan.setAttribute('data-verse-num', verse.num);
+                verseEl.appendChild(wordSpan);
+            }
+        });
+        return verseEl;
+    }
+
+    async function renderChapterText(book, chapter){
+        leftPage.innerHTML = '';
+        rightPage.innerHTML = '';
+        
+        // Indicate loading
+        leftPage.innerHTML = `<p style="text-align:center;color:var(--muted);">Loading ${book} ${chapter}...</p>`;
+        rightPage.innerHTML = '';
+        
+        const verses = await fetchChapter(book, chapter);
+        
+        // Clear loading indicators
+        leftPage.innerHTML = '';
+        
+        // Save initial state for undo/redo
+        undoStack = [];
+        redoStack = [];
+        saveState('initial-load');
+        
+        const twoPage = pagesContainer.classList.contains('two-page');
+        const midpoint = Math.ceil(verses.length / 2);
+        
+        // Determine which page contains the content
+        const targetPage = twoPage ? leftPage : leftPage; // Always start with leftPage, rightPage is only for splitting
+        
+        verses.forEach((verse, index) => {
+            const verseEl = createVerseElement(verse);
+            if (twoPage) {
+                if (index < midpoint) {
+                    leftPage.appendChild(verseEl);
+                } else {
+                    rightPage.appendChild(verseEl);
+                }
+            } else {
+                 leftPage.appendChild(verseEl);
+            }
+        });
+        
+        if (!twoPage) {
+            rightPage.innerHTML = ''; // Ensure the right page is empty in single-page mode
+        }
+        
+        // Update URL/History (optional, but good practice)
+        window.history.pushState({book, chapter}, `${book} ${chapter}`, `?book=${book}&chapter=${chapter}`);
+
+        // Update progress bar
+        updateReadingProgress();
+        
+        // Re-enable/re-check format buttons
+        updateBubbleMode(isBubbleMode);
+        updateUndoRedoButtons();
+    }
+    
+    // Initial content load on window load
+    window.addEventListener('load', () => {
+        // Check URL for initial book/chapter
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlBook = urlParams.get('book');
+        const urlChapter = urlParams.get('chapter');
+        
+        if (urlBook && urlChapter) {
+            const bookExists = books.some(b => b.name === urlBook);
+            if (bookExists) {
+                bookSelect.value = urlBook;
+                populateChapters(urlBook);
+                const chapterExists = Array.from(chapterSelect.options).some(opt => opt.value === urlChapter);
+                if (chapterExists) {
+                    chapterSelect.value = urlChapter;
+                    currentBook = urlBook;
+                    currentChapter = parseInt(urlChapter, 10);
+                }
+            }
+        }
+        
+        // Load initial content (either from URL or default)
+        renderChapterText(currentBook, currentChapter);
+    });
+
+    /* ===========================
+     * Event Handlers
+     * =========================== */
+
+    bookSelect.addEventListener('change', (e) => {
+        const bookName = e.target.value;
+        populateChapters(bookName);
+        currentBook = bookName;
+        currentChapter = 1; // Reset chapter to 1 when book changes
+        chapterSelect.value = 1;
+    });
+
+    chapterSelect.addEventListener('change', (e) => {
+        currentChapter = parseInt(e.target.value, 10);
+    });
+
+    loadBtn.addEventListener('click', () => {
+        renderChapterText(currentBook, currentChapter);
+    });
+
+    prevChapterBtn.addEventListener('click', () => {
+        let chapter = currentChapter - 1;
+        let book = currentBook;
+        const bookObj = getBook(book);
+        
+        if (chapter < 1) {
+            // Move to previous book
+            const currentIndex = books.findIndex(b => b.name === book);
+            if (currentIndex > 0) {
+                const prevBook = books[currentIndex - 1];
+                book = prevBook.name;
+                chapter = prevBook.chapters;
+                
+                bookSelect.value = book;
+                populateChapters(book);
+            } else {
+                // Already at Genesis 1
+                return;
+            }
+        }
+        
+        currentBook = book;
+        currentChapter = chapter;
+        chapterSelect.value = chapter;
+        renderChapterText(currentBook, currentChapter);
+    });
+
+    nextChapterBtn.addEventListener('click', () => {
+        let chapter = currentChapter + 1;
+        let book = currentBook;
+        const bookObj = getBook(book);
+        
+        if (bookObj && chapter > bookObj.chapters) {
+            // Move to next book
+            const currentIndex = books.findIndex(b => b.name === book);
+            if (currentIndex < books.length - 1) {
+                const nextBook = books[currentIndex + 1];
+                book = nextBook.name;
+                chapter = 1;
+                
+                bookSelect.value = book;
+                populateChapters(book);
+            } else {
+                // Already at Revelation 22
+                return;
+            }
+        }
+        
+        currentBook = book;
+        currentChapter = chapter;
+        chapterSelect.value = chapter;
+        renderChapterText(currentBook, currentChapter);
+    });
+    
+    // Theme switching
+    themeSelect.addEventListener('change', (e) => {
+        document.body.className = e.target.value === 'light' ? '' : e.target.value;
+    });
+
+    // Font switching
+    fontSelect.addEventListener('change', (e) => {
+        document.documentElement.style.setProperty('--script-font', e.target.value);
+    });
+    
+    // Verse Number Toggle
+    verseSwitch.addEventListener('click', () => {
+        const isOn = verseSwitch.classList.toggle('on');
+        verseSwitch.setAttribute('aria-checked', isOn);
+        document.body.classList.toggle('hide-verse-nums', !isOn);
+    });
+    
+    // Single/Two Page Toggle (Placeholder for original's implicit functionality)
+    // The original code uses a class 'two-page' on #pagesContainer.
+    // Let's assume a button (if added) or a size change would trigger this.
+    // For regeneration, we'll keep the two-column style and rely on CSS media queries to make it one column on small screens.
+    
+    // Undo/Redo Buttons
+    undoBtn.addEventListener('click', undo);
+    redoBtn.addEventListener('click', redo);
+
+    /* ===========================
+     * Formatting and Highlighting
+     * =========================== */
+
+    /**
+     * Applies/removes a formatting class to the current text selection or a clicked word.
+     * @param {string} className - The CSS class to toggle (e.g., 'bold', 'italic').
+     * @param {string} btnId - The ID of the button to mark as active.
+     */
+    function applyFormat(className, btnId) {
+        const selection = window.getSelection();
+        if (selection.rangeCount > 0) {
+            saveState('format-selection');
+            
+            const range = selection.getRangeAt(0);
+            
+            // Iterate over selected nodes (complex, standard text formatting logic)
+            // For simplicity in a regeneration, we'll encapsulate the whole range in a span, 
+            // but a true reader should wrap individual words/elements.
+            
+            const selectedText = range.extractContents();
+            const wrapper = document.createElement('span');
+            wrapper.className = className;
+            wrapper.appendChild(selectedText);
+            range.insertNode(wrapper);
+            
+            // Re-select the wrapper content
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            saveState('format-selection-end'); // Save the result
+            
+        } else {
+            alert('Please select some text to apply formatting.');
+        }
+        
+        // Toggle the button state (for persistent format, not simple text select)
+        document.getElementById(btnId).classList.toggle('active');
+    }
+
+    boldBtn.addEventListener('click', () => applyFormat('bold', 'boldBtn'));
+    italicBtn.addEventListener('click', () => applyFormat('italic', 'italicBtn'));
+    underlineBtn.addEventListener('click', () => applyFormat('underline', 'underlineBtn'));
+    
+    /**
+     * Toggles bubble mode for word-by-word highlighting.
+     */
+    function updateBubbleMode(isNowOn) {
+        isBubbleMode = isNowOn;
+        document.body.classList.toggle('bubble-mode', isNowOn);
+        bubbleBtn.classList.toggle('active', isNowOn);
+        
+        // Clear selection/notes related states when changing mode
+        currentSelectedVerse = null;
+        newNoteTextarea.value = '';
+    }
+
+    bubbleBtn.addEventListener('click', () => {
+        updateBubbleMode(!isBubbleMode);
+    });
+
+    // Word Click Handler for Bubble Mode
+    document.getElementById('bookFrame').addEventListener('click', (e) => {
+        if (!isBubbleMode) return;
+
+        let target = e.target;
+        // Check if the target is a word span
+        if (target.classList.contains('word') || (target = target.closest('.word'))) {
+            saveState('highlight-word');
+            target.classList.toggle(currentHighlightColor);
+            saveState('highlight-word-end');
+        } else if (target.classList.contains('verse') || (target = target.closest('.verse'))) {
+            // If the user clicks a verse container, highlight all words in it
+            saveState('highlight-verse');
+            target.querySelectorAll('.word').forEach(word => {
+                word.classList.toggle(currentHighlightColor);
+            });
+            saveState('highlight-verse-end');
+        }
+    });
+    
+    // Handle Text Selection for Highlighting (Separate from bubble mode)
+    document.getElementById('bookFrame').addEventListener('mouseup', (e) => {
+        const selection = window.getSelection();
+        const selectionText = selection.toString().trim();
+        
+        if (selectionText.length > 0 && !isBubbleMode) {
+             // A complex implementation would wrap the range elements in .selection-highlight.
+             // Given the context of the original code, the selection highlight is likely handled by the browser's default
+             // or by a more advanced text selection logic. We'll simply let the browser handle its own selection color for now.
+             // If we were to implement .selection-highlight, it would require complex range manipulation across multiple word spans.
+             // The original code only shows the CSS class, not the JS to apply it.
+        }
+    });
+
+    /* ===========================
+     * Notes and Bookmarks
+     * =========================== */
+
+    /**
+     * Renders the list of saved notes in the notes panel.
+     */
+    function renderNotes() {
+        notesList.innerHTML = '';
+        if (notes.length === 0) {
+            notesList.innerHTML = '<p style="color:var(--muted);text-align:center;">No notes saved yet.</p>';
+            return;
+        }
+
+        notes.sort((a, b) => b.timestamp - a.timestamp); // Sort newest first
+
+        notes.forEach((note, index) => {
+            const noteEl = document.createElement('div');
+            noteEl.className = 'note-item';
+            noteEl.innerHTML = `
+                <strong style="color:var(--accent);display:block;margin-bottom:4px;">${note.ref}</strong>
+                <p style="margin:0;font-size:14px;">${note.text}</p>
+                <button class="delete-note" data-index="${index}">×</button>
+            `;
+            notesList.appendChild(noteEl);
+        });
+
+        // Add event listeners for delete buttons
+        notesList.querySelectorAll('.delete-note').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const index = parseInt(e.target.getAttribute('data-index'), 10);
+                deleteNote(index);
+            });
+        });
+    }
+
+    /**
+     * Deletes a note by its index in the *current* sorted list.
+     * @param {number} index - The index of the note to delete.
+     */
+    function deleteNote(index) {
+        notes.splice(index, 1);
+        localStorage.setItem('bibleNotes', JSON.stringify(notes));
+        renderNotes(); // Re-render the list
+    }
+
+    notesBtn.addEventListener('click', () => {
+        notesPanel.classList.add('open');
+        renderNotes();
+    });
+
+    closeNotesBtn.addEventListener('click', () => {
+        notesPanel.classList.remove('open');
+    });
+
+    saveNoteBtn.addEventListener('click', () => {
+        const noteText = newNoteTextarea.value.trim();
+        if (!noteText) return;
+
+        const noteRef = currentSelectedVerse ? 
+                        currentSelectedVerse : 
+                        `${currentBook} ${currentChapter}`;
+
+        notes.push({
+            ref: noteRef,
+            text: noteText,
+            timestamp: Date.now()
+        });
+
+        localStorage.setItem('bibleNotes', JSON.stringify(notes));
+        newNoteTextarea.value = '';
+        renderNotes();
+        alert(`Note saved for ${noteRef}!`);
+    });
+
+    // Listen for verse clicks to set the context for the note (only if not in bubble mode)
+    document.getElementById('bookFrame').addEventListener('dblclick', (e) => {
+        if (isBubbleMode) return;
+        
+        let target = e.target;
+        if (target.classList.contains('verse') || (target = target.closest('.verse'))) {
+            const ref = target.getAttribute('data-ref');
+            currentSelectedVerse = ref;
+            newNoteTextarea.placeholder = `Add a note about verse ${ref}...`;
+        } else {
+            currentSelectedVerse = `${currentBook} ${currentChapter}`;
+            newNoteTextarea.placeholder = `Add a general note about this chapter...`;
+        }
+    });
+
+    bookmarkBtn.addEventListener('click', () => {
+        const bookmarkRef = `${currentBook} ${currentChapter}:1`; // Bookmark the start of the chapter
+        
+        const existingIndex = bookmarks.findIndex(b => b.ref === bookmarkRef);
+        
+        if (existingIndex > -1) {
+            bookmarks.splice(existingIndex, 1);
+            alert(`Bookmark removed from ${currentBook} ${currentChapter}!`);
+            bookmarkBtn.classList.remove('active');
+        } else {
+            bookmarks.push({
+                ref: bookmarkRef,
+                book: currentBook,
+                chapter: currentChapter,
+                timestamp: Date.now()
+            });
+            alert(`Chapter ${currentBook} ${currentChapter} bookmarked!`);
+            bookmarkBtn.classList.add('active');
+        }
+        
+        localStorage.setItem('bibleBookmarks', JSON.stringify(bookmarks));
+    });
+
+    /* ===========================
+     * PDF Saving (using jspdf, html2canvas)
+     * =========================== */
+    savePDFBtn.addEventListener('click', () => {
+        const pageToCapture = document.getElementById('bookFrame');
+        if (!pageToCapture) {
+            alert('No content to save.');
+            return;
+        }
+
+        alert('Generating PDF... this may take a moment.');
+
+        // Use the window.jspdf and window.html2canvas from the CDN links
+        const { jsPDF } = window.jspdf;
+        
+        html2canvas(pageToCapture, {
+            scale: 2, // Higher scale for better quality
+            useCORS: true,
+            allowTaint: true
+        }).then(canvas => {
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = pdf.internal.pageSize.getHeight();
+            
+            const imgWidth = pdfWidth - 20; // 10mm margin on each side
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            let heightLeft = imgHeight;
+            let position = 10; // Initial Y position with top margin
+
+            pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
+            heightLeft -= (pdfHeight - position);
+
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pdfHeight;
+            }
+            
+            pdf.save(`${currentBook}_${currentChapter}_BibleBuddy.pdf`);
+        });
+    });
+
+
+    /* ===========================
+     * Reading Progress Bar
+     * =========================== */
+    function updateReadingProgress() {
+        // Calculate scroll position relative to the main content
+        const content = document.getElementById('bookFrame');
+        if (!content) return;
+        
+        const scrollableHeight = content.scrollHeight - content.clientHeight;
+        const scrolled = content.scrollTop;
+        
+        const percent = scrollableHeight > 0 ? (scrolled / scrollableHeight) * 100 : 100;
+        
+        readingProgress.style.width = `${Math.min(percent, 100)}%`;
+    }
+
+    // Attach scroll listener to the main content container
+    document.getElementById('bookFrame').addEventListener('scroll', updateReadingProgress);
+    // Also update on window resize (to adjust for content reflow)
+    window.addEventListener('resize', updateReadingProgress);
+
+
+    /* ===========================
+     * RSVP Mode (Rapid Serial Visual Presentation)
+     * =========================== */
+
+    /**
+     * Prepares the word list for RSVP reading.
+     */
+    function prepareRsvp() {
+        if (!chapterText) {
+             rsvpWordEl.textContent = "Load a chapter first!";
+             return;
+        }
+        
+        // Simple tokenization: split by whitespace and filter out empty strings
+        rsvpWords = chapterText.match(/\S+/g) || [];
+        rsvpCurrentIndex = 0;
+        rsvpRepeatCount = 0;
+        rsvpIsPlaying = false;
+        rsvpPlayPauseBtn.textContent = 'Start Reading';
+        rsvpWordEl.textContent = 'Ready';
+        rsvpProgressBar.style.width = '0%';
+        
+        // Update max repeats value
+        rsvpMaxRepeats = parseInt(rsvpRepeatRange.value, 10);
+        rsvpRepeatValue.textContent = rsvpMaxRepeats;
+    }
+
+    /**
+     * Finds the Optical Recognition Point (ORP) for a word.
+     * The ORP is typically the pivot letter for visual focus.
+     * @param {string} word - The word to process.
+     * @returns {{prefix: string, pivot: string, suffix: string}} The split word.
+     */
+    function getRsvpPivot(word) {
+        let pivotIndex = 0;
+        const len = word.length;
+
+        if (len <= 1) pivotIndex = 0;
+        else if (len <= 5) pivotIndex = 1;
+        else if (len <= 9) pivotIndex = 2;
+        else if (len <= 13) pivotIndex = 3;
+        else pivotIndex = 4;
+        
+        return {
+            prefix: word.substring(0, pivotIndex),
+            pivot: word.substring(pivotIndex, pivotIndex + 1),
+            suffix: word.substring(pivotIndex + 1)
+        };
+    }
+
+    /**
+     * Displays the current word in the RSVP reader.
+     */
+    function displayRsvpWord() {
+        if (rsvpCurrentIndex >= rsvpWords.length) {
+            // Chapter finished
+            rsvpRepeatCount++;
+            if (rsvpRepeatCount < rsvpMaxRepeats) {
+                // Repeat chapter
+                rsvpCurrentIndex = 0;
+            } else {
+                // Stop reading
+                clearInterval(rsvpInterval);
+                rsvpInterval = null;
+                rsvpIsPlaying = false;
+                rsvpPlayPauseBtn.textContent = 'Restart';
+                rsvpWordEl.innerHTML = `<span style="font-size:32px;">Chapter Finished!</span>`;
+                rsvpProgressBar.style.width = '100%';
+                return;
+            }
+        }
+        
+        const word = rsvpWords[rsvpCurrentIndex];
+        const { prefix, pivot, suffix } = getRsvpPivot(word);
+        
+        // Render the word with ORP highlighting
+        rsvpWordEl.innerHTML = `
+            <span class="rsvp-prefix">${prefix}</span>
+            <span class="rsvp-pivot">${pivot}</span>
+            <span class="rsvp-suffix">${suffix}</span>
+        `;
+
+        // Update progress bar
+        const progress = (rsvpCurrentIndex + 1) / rsvpWords.length;
+        rsvpProgressBar.style.width = `${progress * 100}%`;
+        
+        rsvpCurrentIndex++;
+    }
+
+    /**
+     * Starts or pauses the RSVP reading interval.
+     */
+    function toggleRsvpPlayback() {
+        if (rsvpIsPlaying) {
+            clearInterval(rsvpInterval);
+            rsvpInterval = null;
+            rsvpIsPlaying = false;
+            rsvpPlayPauseBtn.textContent = 'Resume Reading';
+        } else {
+            if (rsvpWords.length === 0) {
+                 prepareRsvp();
+                 if (rsvpWords.length === 0) return;
+            }
+            
+            const delay = 60000 / rsvpSpeed; // ms per word
+            rsvpInterval = setInterval(displayRsvpWord, delay);
+            rsvpIsPlaying = true;
+            rsvpPlayPauseBtn.textContent = 'Pause Reading';
+        }
+    }
+
+    // RSVP button events
+    rsvpBtn.addEventListener('click', () => {
+        rsvpContainer.style.display = 'flex';
+        rsvpContainer.setAttribute('aria-hidden', 'false');
+        prepareRsvp();
+    });
+
+    rsvpCloseBtn.addEventListener('click', () => {
+        if (rsvpInterval) {
+            clearInterval(rsvpInterval);
+        }
+        rsvpContainer.style.display = 'none';
+        rsvpContainer.setAttribute('aria-hidden', 'true');
+    });
+
+    rsvpPlayPauseBtn.addEventListener('click', toggleRsvpPlayback);
+
+    rsvpRestartBtn.addEventListener('click', () => {
+        if (rsvpInterval) {
+            clearInterval(rsvpInterval);
+        }
+        prepareRsvp();
+        toggleRsvpPlayback();
+    });
+
+    rsvpSlowerBtn.addEventListener('click', () => {
+        rsvpSpeed = Math.max(100, rsvpSpeed - 50);
+        rsvpSpeedDisplay.textContent = rsvpSpeed;
+        if (rsvpIsPlaying) {
+            toggleRsvpPlayback(); // Pause and restart with new speed
+            toggleRsvpPlayback();
+        }
+    });
+
+    rsvpFasterBtn.addEventListener('click', () => {
+        rsvpSpeed = Math.min(1500, rsvpSpeed + 50);
+        rsvpSpeedDisplay.textContent = rsvpSpeed;
+        if (rsvpIsPlaying) {
+            toggleRsvpPlayback(); // Pause and restart with new speed
+            toggleRsvpPlayback();
+        }
+    });
+    
+    rsvpRepeatRange.addEventListener('input', (e) => {
+        rsvpMaxRepeats = parseInt(e.target.value, 10);
+        rsvpRepeatValue.textContent = rsvpMaxRepeats;
+    });
+
+    /* ===========================
+     * Audio (Text-to-Speech)
+     * =========================== */
+    const synth = window.speechSynthesis;
+    let audioIsPlaying = false;
+    let audioVoice = null;
+
+    /**
+     * Initializes the TTS voice, preferring a specific one if available.
+     */
+    function setAudioVoice() {
+        const voices = synth.getVoices();
+        // Try to find a high-quality US English voice
+        audioVoice = voices.find(voice => 
+            voice.lang === 'en-US' && 
+            (voice.name.includes('Google') || voice.name.includes('Apple') || voice.default)
+        ) || voices.find(voice => voice.lang.startsWith('en')) || voices[0];
+    }
+    
+    // Voices may not be available immediately
+    if (synth.onvoiceschanged !== undefined) {
+        synth.onvoiceschanged = setAudioVoice;
+    } else {
+        setAudioVoice();
+    }
+
+
+    /**
+     * Starts, pauses, or resumes the audio reading.
+     */
+    function toggleAudioPlayback() {
+        if (!chapterText || chapterText.includes('Failed to fetch')) {
+            document.getElementById('audioStatus').textContent = 'Error: No chapter loaded.';
+            return;
+        }
+
+        if (synth.speaking) {
+            if (synth.paused) {
+                synth.resume();
+                audioIsPlaying = true;
+                audioPlayPauseBtn.textContent = 'Pause';
+                document.getElementById('audioStatus').textContent = 'Reading...';
+            } else {
+                synth.pause();
+                audioIsPlaying = false;
+                audioPlayPauseBtn.textContent = 'Play';
+                document.getElementById('audioStatus').textContent = 'Paused.';
+            }
+        } else {
+            // Start reading from the beginning
+            const utterance = new SpeechSynthesisUtterance(chapterText);
+            utterance.voice = audioVoice;
+            utterance.rate = 1.0; // Normal speed
+
+            utterance.onend = () => {
+                audioIsPlaying = false;
+                audioPlayPauseBtn.textContent = 'Play';
+                document.getElementById('audioStatus').textContent = 'Finished.';
+            };
+
+            synth.speak(utterance);
+            audioIsPlaying = true;
+            audioPlayPauseBtn.textContent = 'Pause';
+            document.getElementById('audioStatus').textContent = 'Reading...';
+        }
+    }
+    
+    audioBtn.addEventListener('click', () => {
+        audioPlayer.style.display = 'flex';
+        // Stop any existing RSVP playback
+        if (rsvpInterval) {
+            rsvpCloseBtn.click();
+        }
+    });
+    
+    audioPlayPauseBtn.addEventListener('click', toggleAudioPlayback);
+    
+    audioCloseBtn.addEventListener('click', () => {
+        synth.cancel(); // Stop and clear all pending utterances
+        audioIsPlaying = false;
+        audioPlayer.style.display = 'none';
+        audioPlayPauseBtn.textContent = 'Play';
+        document.getElementById('audioStatus').textContent = 'Audio ready';
+    });
+
+
+    /* ===========================
+     * Global Keyboard Shortcuts
+     * =========================== */
+    document.addEventListener('keydown', (e) => {
+        // Prevent default save (Ctrl+S) and print (Ctrl+P) for custom handlers
+        if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+            e.preventDefault();
+            // Trigger PDF save (or a different save action)
+            savePDFBtn.click(); 
+        }
+        
+        // Ctrl+Z for Undo
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'Z')) {
+            e.preventDefault();
+            undo();
+        }
+        
+        // Ctrl+Y or Ctrl+Shift+Z for Redo
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || e.key === 'Y' || (e.shiftKey && (e.key === 'z' || e.key === 'Z')))) {
+            e.preventDefault();
+            redo();
+        }
+        
+        // Ctrl+R for RSVP Mode
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'r' || e.key === 'R')) {
+            e.preventDefault();
+            if (rsvpContainer.style.display === 'flex') {
+                rsvpCloseBtn.click();
+            } else {
+                rsvpBtn.click();
+            }
+        }
+        
+        // Ctrl+N for Notes
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'n' || e.key === 'N')) {
+            e.preventDefault();
+            notesBtn.click();
+        }
+        
+        // Ctrl+A for Audio
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'a' || e.key === 'A')) {
+            e.preventDefault();
+            if (audioPlayer.style.display === 'none') {
+                audioBtn.click();
+            }
+            toggleAudioPlayback();
+        }
+    });
+
+</script>
+</body>
+</html>
